@@ -1,0 +1,12 @@
+# Repo-root tooling config (RECONSTRUCTED 2026-10-27, see docs/DECISIONS.md I25).
+# The original root file was missing from the delivered repo. Rules inferred from
+# existing noqa comments (E402, E731, B010) and verified to give zero findings.
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["core/tests", "data/tests", "assistant/tests", "lab/tests", "apps/api/tests", "tests"]

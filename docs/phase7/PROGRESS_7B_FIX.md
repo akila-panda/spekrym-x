@@ -1,0 +1,6 @@
+
+### Fix after the owner's run of 7B (2026-10-27, Mac, Intel, Python 3.14.3)
+- Owner ran: `pip install -e lab` ok; `pytest lab/tests` **41 passed** (60 s); `ruff check .` clean; `evaluate`, `search` (12 trials, 6 distinct) and `report` ran and matched the sandbox numbers (validation QLIKE historical_mean 0.10148, persistence 0.19501, har 0.10507, garch11 0.09123; purged CV order differs from validation order; shuffled-label control FAIL, leak guard PASS).
+- Full `pytest -q` FAILED at collection: `assistant/tests/test_ta_candles_talib.py` and `test_ta_normalize.py` did `from conftest import D0` and got `lab/tests/conftest.py` (pytest imports every `conftest.py` as the top-level module `conftest`). My bug, from adding a conftest in 7A.
+- Fix: `lab/tests/conftest.py` deleted; fixtures moved to `lab/tests/lab_fixtures.py` and registered under private names imported by each test module. Sandbox after the fix: `pytest lab/tests` 41 passed, `ruff check lab` clean, and collecting the two failing assistant files together with `lab/tests` no longer fails on `from conftest import D0` (it stops later only because the sandbox venv lacks `sx_assistant`). The full suite is NOT re-run by me.
+- Lesson for later phases: never add a `conftest.py` under a new test folder in this repo; use a uniquely named helper module.

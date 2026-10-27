@@ -1,0 +1,122 @@
+{
+ "note": "SYNTHETIC scripted day, hand-computed expectations, slippage 0.00002",
+ "quotes": [
+  {
+   "time": "2026-10-26T07:00:00Z",
+   "bid": 1.0849,
+   "ask": 1.085
+  },
+  {
+   "time": "2026-10-26T07:15:00Z",
+   "bid": 1.0847,
+   "ask": 1.0848
+  },
+  {
+   "time": "2026-10-26T07:30:00Z",
+   "bid": 1.0844,
+   "ask": 1.0845
+  },
+  {
+   "time": "2026-10-26T07:45:00Z",
+   "bid": 1.0846,
+   "ask": 1.0847
+  },
+  {
+   "time": "2026-10-26T08:00:00Z",
+   "bid": 1.0852,
+   "ask": 1.0853
+  },
+  {
+   "time": "2026-10-26T08:15:00Z",
+   "bid": 1.086,
+   "ask": 1.0861
+  },
+  {
+   "time": "2026-10-26T08:30:00Z",
+   "bid": 1.0856,
+   "ask": 1.0857
+  },
+  {
+   "time": "2026-10-26T08:45:00Z",
+   "bid": 1.084,
+   "ask": 1.0841
+  },
+  {
+   "time": "2026-10-26T09:00:00Z",
+   "bid": 1.0835,
+   "ask": 1.0836
+  }
+ ],
+ "requests": [
+  {
+   "name": "A",
+   "submit_index": 0,
+   "suggestion_id": "sug:A",
+   "side": "long",
+   "units": 10000,
+   "entry": 1.0845,
+   "stop": 1.0835,
+   "target": 1.086,
+   "rules_version": "rules-test"
+  },
+  {
+   "name": "B",
+   "submit_index": 4,
+   "suggestion_id": "sug:B",
+   "side": "short",
+   "units": 5000,
+   "entry": 1.086,
+   "stop": 1.087,
+   "target": 1.084,
+   "rules_version": "rules-test"
+  },
+  {
+   "name": "C",
+   "submit_index": 0,
+   "suggestion_id": "sug:C",
+   "side": "long",
+   "units": 10000,
+   "entry": 1.083,
+   "stop": 1.082,
+   "target": 1.09,
+   "rules_version": "rules-test"
+  },
+  {
+   "name": "D",
+   "submit_index": 0,
+   "suggestion_id": "sug:D",
+   "side": "long",
+   "units": 10000,
+   "entry": 1.0848,
+   "stop": 1.084,
+   "target": 1.09,
+   "rules_version": "rules-test"
+  }
+ ],
+ "expected": {
+  "A": {
+   "state": "closed",
+   "actual_fill": 1.08452,
+   "slippage": 2e-05,
+   "pnl": 14.8,
+   "closed_at": "2026-10-26T08:15:00Z"
+  },
+  "B": {
+   "state": "closed",
+   "actual_fill": 1.08598,
+   "slippage": 2e-05,
+   "pnl": 9.9,
+   "closed_at": "2026-10-26T09:00:00Z"
+  },
+  "C": {
+   "state": "pending"
+  },
+  "D": {
+   "state": "closed",
+   "actual_fill": 1.08482,
+   "slippage": 2e-05,
+   "pnl": -8.4,
+   "closed_at": "2026-10-26T08:45:00Z"
+  }
+ }
+}

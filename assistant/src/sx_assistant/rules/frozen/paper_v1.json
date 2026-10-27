@@ -1,0 +1,6 @@
+{
+  "version": "paper-v1",
+  "max_open_trades": 2,
+  "daily_loss_limit": 100.0,
+  "blackouts": []
+}

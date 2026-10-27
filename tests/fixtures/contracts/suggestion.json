@@ -1,0 +1,30 @@
+{
+  "id": "sug:0123456789abcdef",
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "created_at": "2026-10-19T12:15:00Z",
+  "setup_ids": [
+    "setup:0123456789abcdef"
+  ],
+  "forecast_id": "fc:0123456789abcdef",
+  "side": "long",
+  "entry": 1.0862,
+  "stop": 1.085,
+  "target": 1.089,
+  "score": 0.5,
+  "reasons": [
+    {
+      "text": "Asia high retested",
+      "evidence_id": "setup:0123456789abcdef"
+    }
+  ],
+  "gates": [
+    {
+      "name": "news_blackout",
+      "passed": true,
+      "detail": "no event within 30 min"
+    }
+  ],
+  "rules_version": "rules-v1",
+  "status": "not_validated"
+}

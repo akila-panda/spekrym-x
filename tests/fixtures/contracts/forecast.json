@@ -1,0 +1,31 @@
+{
+  "id": "fc:0123456789abcdef",
+  "instrument": "EUR_USD",
+  "tf": "H1",
+  "issued_at": "2026-10-19T12:00:00Z",
+  "horizon_end": "2026-10-19T13:00:00Z",
+  "target": "realized_vol",
+  "point": 0.0042,
+  "interval": {
+    "low": 0.003,
+    "high": 0.006,
+    "nominal_coverage": 0.8
+  },
+  "regime": "normal",
+  "model": {
+    "name": "har",
+    "version": "0.1.0",
+    "params_hash": "abc123"
+  },
+  "baseline_comparison": {
+    "baseline": "naive",
+    "metric": "qlike",
+    "delta": -0.02
+  },
+  "track_record": {
+    "n": 120,
+    "empirical_coverage": 0.78,
+    "variants_tried": 4
+  },
+  "status": "exploratory"
+}

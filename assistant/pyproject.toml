@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sx-assistant"
+version = "0.1.0"
+description = "spekrym-x assistant: causal technical analysis adapters (Phase 4), later premarket, paper, suggestions"
+requires-python = ">=3.12"
+dependencies = [
+  "sx-core",
+  "sx-data",
+  "TA-Lib==0.8.2",
+  # smartmoneyconcepts==0.0.27 is also required but is NOT listed here: it declares numba,
+  # which it never imports, and numba/llvmlite have no Intel-Mac wheels. Install it with:
+  #   pip install --no-deps smartmoneyconcepts==0.0.27
+]
+
+[project.optional-dependencies]
+# Retrospective trendlines (premarket only). Heavy: pulls scipy, scikit-image, matplotlib, sympy.
+retro = ["trendln==0.1.18"]
+# Static daily brief (premarket/report_plotly.py). PNG/PDF export also needs Google Chrome installed.
+report = ["plotly==7.1.0", "kaleido==1.5.0"]
+dev = ["pytest==9.1.1", "ruff==0.17.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

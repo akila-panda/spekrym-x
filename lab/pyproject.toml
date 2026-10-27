@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sx-lab"
+version = "0.1.0"
+description = "spekrym-x Lab: volatility and regime forecasting. Phase 7A/7B: partition, features, metrics, baselines, controls, search"
+requires-python = ">=3.12"
+dependencies = [
+  "sx-core",
+  "arch==8.0.0",    # GARCH parameter estimation only (see baselines/garch.py)
+  "optuna==5.0.0",  # search/optuna_search.py
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "ruff==0.17.2"]
+
+[project.scripts]
+sx-lab = "sx_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

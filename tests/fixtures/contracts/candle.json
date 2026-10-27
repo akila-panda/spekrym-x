@@ -1,0 +1,13 @@
+{
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T00:00:00Z",
+  "open": 1.085,
+  "high": 1.08515,
+  "low": 1.08478,
+  "close": 1.08485,
+  "volume": 354.0,
+  "bid_close": 1.08481,
+  "ask_close": 1.08489,
+  "complete": true
+}

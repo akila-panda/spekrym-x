@@ -1,0 +1,16 @@
+{
+  "id": "ord:0123456789abcdef",
+  "suggestion_id": "sug:0123456789abcdef",
+  "backend": "sim",
+  "side": "long",
+  "units": 10000,
+  "entry": 1.0862,
+  "stop": 1.085,
+  "target": 1.089,
+  "intended_fill": 1.0862,
+  "actual_fill": 1.08622,
+  "slippage": 2e-05,
+  "state": "filled",
+  "opened_at": "2026-10-19T12:15:00Z",
+  "rules_version": "rules-v1"
+}

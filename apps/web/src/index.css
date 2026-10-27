@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root, [data-theme='dark'] {
+  --bg:#1A1918; --surface:#232120; --surface-2:#2B2927; --border:#3A3734;
+  --text:#ECE8E1; --muted:#A39D93; --accent:#D97757;
+  --bull:#5BB98C; --bear:#E0685E; --asia:#5FA8B8; --london:#D4A94F; --ny:#9B8AE0; --warn:#E3B341;
+}
+[data-theme='light'] {
+  --bg:#FAF9F5; --surface:#FFFFFF; --surface-2:#F2EFE7; --border:#E4DFD3;
+  --text:#1F1E1D; --muted:#6B665D; --accent:#C15F3C;
+  --bull:#2E8B64; --bear:#C2453B; --asia:#3B8394; --london:#A9812A; --ny:#6F5CC4; --warn:#B7881B;
+}
+html, body, #root { height: 100%; }
+body { overflow: hidden; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; }
+button:focus-visible, input:focus-visible, [role='tab']:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[cmdk-group-heading] { padding: 6px 12px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+@media print {
+  .no-print { display: none !important; }
+  html, body, #root, #root div { height: auto !important; overflow: visible !important; }
+  body { background: #fff; color: #000; }
+  .print-area { overflow: visible; color: #000; }
+  .print-area * { color: #000 !important; border-color: #999 !important; }
+}

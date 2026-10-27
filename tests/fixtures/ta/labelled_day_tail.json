@@ -1,0 +1,67 @@
+[
+ {
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T07:00:00Z",
+  "open": 1.0816,
+  "high": 1.0817,
+  "low": 1.0814,
+  "close": 1.0815,
+  "volume": 100.0,
+  "bid_close": 1.08148,
+  "ask_close": 1.08152,
+  "complete": true
+ },
+ {
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T07:15:00Z",
+  "open": 1.0815,
+  "high": 1.0816,
+  "low": 1.0811,
+  "close": 1.0812,
+  "volume": 100.0,
+  "bid_close": 1.08118,
+  "ask_close": 1.08122,
+  "complete": true
+ },
+ {
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T07:30:00Z",
+  "open": 1.0812,
+  "high": 1.0813,
+  "low": 1.0807,
+  "close": 1.0808,
+  "volume": 100.0,
+  "bid_close": 1.08078,
+  "ask_close": 1.08082,
+  "complete": true
+ },
+ {
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T07:45:00Z",
+  "open": 1.0808,
+  "high": 1.0809,
+  "low": 1.0801,
+  "close": 1.0802,
+  "volume": 100.0,
+  "bid_close": 1.08018,
+  "ask_close": 1.08022,
+  "complete": true
+ },
+ {
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "time": "2026-10-19T08:00:00Z",
+  "open": 1.0802,
+  "high": 1.0803,
+  "low": 1.08,
+  "close": 1.0801,
+  "volume": 100.0,
+  "bid_close": 1.08008,
+  "ask_close": 1.08012,
+  "complete": true
+ }
+]

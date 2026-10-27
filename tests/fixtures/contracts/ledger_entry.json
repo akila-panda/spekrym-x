@@ -1,0 +1,10 @@
+{
+  "ts": "2026-10-19T12:15:00Z",
+  "kind": "suggestion",
+  "payload": {
+    "id": "sug:0123456789abcdef"
+  },
+  "data_version": "dv:0123456789abcdef",
+  "rules_version": "rules-v1",
+  "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

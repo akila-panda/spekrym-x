@@ -1,0 +1,36 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# node
+node_modules/
+apps/web/dist/
+.vite/
+coverage/
+
+# data and outputs
+data/src/sx_data/cache/*
+!data/src/sx_data/cache/.gitkeep
+*.parquet
+mlruns/
+lab/outputs/*
+!lab/outputs/.gitkeep
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+spekrym-x-optimized.zip

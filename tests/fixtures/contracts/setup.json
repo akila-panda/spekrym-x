@@ -1,0 +1,24 @@
+{
+  "id": "setup:0123456789abcdef",
+  "kind": "session_level",
+  "instrument": "EUR_USD",
+  "tf": "M15",
+  "direction": "neutral",
+  "geometry": {
+    "price_low": 1.0861,
+    "price_high": 1.0861,
+    "t_start": "2026-10-19T00:00:00Z",
+    "t_end": "2026-10-19T07:00:00Z"
+  },
+  "event_time": "2026-10-19T06:45:00Z",
+  "known_at": "2026-10-19T07:00:00Z",
+  "lifecycle": "fresh",
+  "source": {
+    "library": "in_house",
+    "version": "0.1.0",
+    "adapter": "sessions"
+  },
+  "plain_text": "Asia high",
+  "invalidation": "Close above the level",
+  "status": "causal"
+}
