@@ -8,7 +8,8 @@ Gaps: a gap is the run of missing bars between two consecutive bars. A gap insid
 closure window is *expected*; any other gap is *unexpected* and, if longer than
 ``max_gap_bars``, degrades the feed. Both the window and ``max_gap_bars`` are ASSUMPTIONS
 (Exploratory, see ``GapRules``), not exchange calendars: market holidays show up as unexpected
-gaps, and a single missing quiet minute on M1 is normal and tolerated.
+gaps (except the Dec 25 and Jan 1 closures, see ``GapRules.holiday_closures``), and a
+single missing quiet minute on M1 is normal and tolerated.
 """
 
 from __future__ import annotations
@@ -33,6 +34,10 @@ class GapRules:
     closure_end: tuple[int, int, int] = (6, 23, 0)     # Sunday
     max_gap_bars: int = 3
     stale_after_bars: int = 3
+    # Christmas and New Year closures (UTC windows, wide enough for both US DST states).
+    # Seen on real OANDA practice H1: last bar Dec 24 21:00, next Dec 25 22:00; same on Jan 1.
+    # Other holidays (Good Friday and so on) are NOT listed: they stay unexpected gaps.
+    holiday_closures: bool = True
 
 
 @dataclass(frozen=True)
@@ -78,6 +83,19 @@ def _in_closure(a: pd.Timestamp, b: pd.Timestamp, rules: GapRules) -> bool:
         minutes=hi - lo)
 
 
+def _in_holiday(a: pd.Timestamp, b: pd.Timestamp, rules: GapRules) -> bool:
+    """True if the missing span ``[a, b)`` lies inside a Dec 25 or Jan 1 closure window."""
+    if not rules.holiday_closures:
+        return False
+    for y in (a.year - 1, a.year):
+        windows = ((pd.Timestamp(y, 12, 24, 20, tz="UTC"), pd.Timestamp(y, 12, 26, tz="UTC")),
+                   (pd.Timestamp(y, 12, 31, 20, tz="UTC"),
+                    pd.Timestamp(y + 1, 1, 2, tz="UTC")))
+        if any(lo <= a and b <= hi for lo, hi in windows):
+            return True
+    return False
+
+
 DEFAULT_RULES = GapRules()
 
 
@@ -107,7 +125,8 @@ def check_quality(df: pd.DataFrame, tf: str, *, now: datetime | None = None,
         if missing <= 0:
             continue
         gap = Gap(a.to_pydatetime(), b.to_pydatetime(), missing)
-        (expected if _in_closure(a + step, b, rules) else unexpected).append(gap)
+        (expected if _in_closure(a + step, b, rules) or _in_holiday(a + step, b, rules)
+         else unexpected).append(gap)
 
     stale = False
     if now is not None:

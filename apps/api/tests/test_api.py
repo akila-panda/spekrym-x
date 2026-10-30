@@ -56,7 +56,7 @@ def test_premarket_bad_requests(client, params, code):
     assert client.get("/premarket", params=params).status_code == code
 
 
-@pytest.mark.parametrize("path", ["/suggestions", "/paper", "/lab"])
+@pytest.mark.parametrize("path", ["/paper", "/lab"])
 def test_placeholders_are_empty(client, path):
     assert client.get(path).json()["status"] == "not_built"
 

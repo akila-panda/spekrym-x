@@ -1,0 +1,47 @@
+# FROZEN TEST FIXTURE: a draft spec (status draft, data and approval empty). Not an experiment.
+# Tests use this so they keep passing after the real lab/experiments/prereg/EXP-001.yaml is locked.
+id: EXP-001
+status: draft
+question: >-
+  Does MiniMamba improve out-of-sample H1 volatility forecasts over HAR and GARCH(1,1),
+  measured by QLIKE at a 24-bar horizon? A tie or a loss is a valid result.
+data:
+  instrument: EUR_USD
+  tf: H1
+  data_version: null      # from provenance sidecar (sx-lab import)
+  first_bar: null
+  last_bar: null
+horizon_bars: 24          # L12 (confirmed)
+windows: [3, 6, 12, 24, 72, 120]
+gap_policy: trading_time_windows_v1   # L16 (PROPOSED): weekend/gap returns excluded
+partition:                # L12 (confirmed): 60/20/20, embargo >= horizon
+  train: 0.6
+  validation: 0.2
+  holdout: 0.2
+  embargo_bars: 24
+models:                   # L15 (confirmed): Naive, HAR, GARCH, MiniMamba only
+  - {name: historical_mean, role: reference}
+  - {name: persistence, role: reference}
+  - {name: har, role: baseline}
+  - {name: garch11, role: baseline, pin: "arch==8.0.0"}
+  - name: minimamba
+    role: challenger
+    pin: "minimamba==1.0.1; torch==2.14.1 (conda-forge); run on Linux first (L13)"
+    settings: {d_model: 64, n_layer: 2, context_bars: 48, use_fast_path: false}  # PROPOSED
+primary_metric: qlike     # L12 (confirmed)
+secondary_metrics: [rmse, interval_coverage]
+mcs: {level: 0.10, reps: 1000, block_size: 24, method: R, seed: 20261027}  # level L12; rest PROPOSED
+conformal: {alpha: 0.2, calibration: first half of the validation split}  # PROPOSED
+max_variants: 20          # PROPOSED cap on variants tried (trials + seeds), counted in the ledger
+stopping_rule: >-
+  One run. Stop after the MiniMamba configuration above is trained once per seed (seeds 1, 2, 3) and scored on validation. The holdout is opened exactly once, after
+  the validation result and the model choice are written to the ledger.
+outcome_rules:            # PROPOSED
+  win: MiniMamba is in the model confidence set and HAR and GARCH are both excluded.
+  tie: MiniMamba, HAR and/or GARCH are all in the model confidence set.
+  loss: MiniMamba is excluded while HAR or GARCH is included.
+  inconclusive: Anything not covered above (for example only a reference model is in the model confidence set).
+labels: [Exploratory, Not validated, Retrospective]
+approval:
+  approved_by: null
+  approved_on: null

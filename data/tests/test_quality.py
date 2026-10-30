@@ -97,3 +97,24 @@ def test_week_fixture_resamples_onto_the_utc_grid(h1_week, tf):
 def test_daily_bars_weekend_gap_is_expected_too(h1_week):
     r = check_quality(frame(resample(h1_week, "D")), "D")
     assert len(r.expected_gaps) == 1 and r.unexpected_gaps == ()  # Sat is the missing day
+
+
+def _hourly(*spans):
+    import pandas as pd
+    times = [t for a, b in spans for t in pd.date_range(a, b, freq="h", tz="UTC")]
+    return pd.DataFrame({"time": times, "bid_close": 1.0, "ask_close": 1.1, "complete": True})
+
+
+def test_christmas_and_new_year_closures_are_expected_gaps():
+    f = _hourly(("2025-12-22 00:00", "2025-12-24 21:00"), ("2025-12-25 22:00", "2025-12-26 10:00"))
+    r = check_quality(f, "H1")
+    assert len(r.expected_gaps) == 1 and r.unexpected_gaps == () and not r.feed_degraded
+    f = _hourly(("2025-12-29 00:00", "2025-12-31 21:00"), ("2026-01-01 22:00", "2026-01-02 10:00"))
+    assert not check_quality(f, "H1").feed_degraded
+
+
+def test_other_long_gaps_and_the_switch_stay_unexpected():
+    f = _hourly(("2026-03-02 00:00", "2026-03-03 21:00"), ("2026-03-04 22:00", "2026-03-05 10:00"))
+    assert check_quality(f, "H1").feed_degraded
+    f = _hourly(("2025-12-22 00:00", "2025-12-24 21:00"), ("2025-12-25 22:00", "2025-12-26 10:00"))
+    assert check_quality(f, "H1", rules=GapRules(holiday_closures=False)).feed_degraded

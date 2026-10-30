@@ -1,0 +1,92 @@
+{
+ "conformal": {
+  "har": {
+   "caveat": "split-conformal needs exchangeability; not guaranteed for volatility",
+   "empirical": 0.589671737389912,
+   "mean_width_ratio": 1.153403984058429,
+   "n": 2498,
+   "n_calibration": 1249,
+   "nominal": 0.8,
+   "worst_rolling_50": 0.0
+  },
+  "minimamba": {
+   "caveat": "split-conformal needs exchangeability; not guaranteed for volatility",
+   "empirical": 0.7213771016813451,
+   "mean_width_ratio": 2.015578977811041,
+   "n": 2498,
+   "n_calibration": 1249,
+   "nominal": 0.8,
+   "worst_rolling_50": 0.0
+  }
+ },
+ "data_label": "OANDA PRACTICE FEED - NOT INDEPENDENTLY VERIFIED",
+ "data_version": "dv:8db0760d82acfc2a",
+ "environment": {
+  "arch": "8.0.0",
+  "minimamba": "1.0.1",
+  "numpy": "2.5.4",
+  "pandas": "3.1.0",
+  "platform": "macOS-15.7.9-x86_64-i386-64bit-Mach-O",
+  "python": "3.14.10",
+  "statsmodels": "0.15.0",
+  "torch": "2.14.1"
+ },
+ "experiment": "EXP-001",
+ "labels": "Exploratory | Not validated | Retrospective",
+ "mcs": {
+  "block_size": 24,
+  "excluded": [
+   "garch11",
+   "historical_mean",
+   "persistence"
+  ],
+  "included": [
+   "har",
+   "minimamba"
+  ],
+  "level": 0.1,
+  "n": 2498,
+  "pvalues": {
+   "garch11": 0.0,
+   "har": 0.909,
+   "historical_mean": 0.0,
+   "minimamba": 1.0,
+   "persistence": 0.02
+  },
+  "reps": 1000,
+  "seed": 20261027
+ },
+ "n_holdout": 2498,
+ "outcome": "tie",
+ "reason": "EXP-001 one-shot holdout",
+ "scores": {
+  "garch11": {
+   "n": 2498,
+   "qlike": 0.6201827748370919,
+   "rmse": 7.721784425207955e-07
+  },
+  "har": {
+   "n": 2498,
+   "qlike": 0.39296477749125497,
+   "rmse": 4.874936746880607e-07
+  },
+  "historical_mean": {
+   "n": 2498,
+   "qlike": 0.5802079643779681,
+   "rmse": 6.942956884134899e-07
+  },
+  "minimamba": {
+   "n": 2498,
+   "qlike": 0.38808543145651153,
+   "rmse": 5.03586137803965e-07
+  },
+  "persistence": {
+   "n": 2498,
+   "qlike": 0.6344410353094682,
+   "rmse": 5.419805748585937e-07
+  }
+ },
+ "spec_hash": "7a541633a9161018c7f46aa80a5664293e26193c06e4439f27a542ffb7dca33c",
+ "stage": "holdout",
+ "variants_tried": 3
+}

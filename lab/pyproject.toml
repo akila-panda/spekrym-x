@@ -5,16 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sx-lab"
 version = "0.1.0"
-description = "spekrym-x Lab: volatility and regime forecasting. Phase 7A/7B: partition, features, metrics, baselines, controls, search"
+description = "spekrym-x Lab: volatility and regime forecasting. Phases 7A/7B/8A: partition, features, metrics, baselines, controls, search, conformal, MCS, regimes, spec"
 requires-python = ">=3.12"
 dependencies = [
   "sx-core",
   "arch==8.0.0",    # GARCH parameter estimation only (see baselines/garch.py)
   "optuna==5.0.0",  # search/optuna_search.py
+  "statsmodels==0.15.0",  # regime/markov_switching.py (filtered probabilities only)
+  "pyyaml==6.0.3",        # spec.py (experiment pre-registration)
 ]
 
 [project.optional-dependencies]
 dev = ["pytest==9.1.1", "ruff==0.17.2"]
+# optional cross-check only; ruptures 1.1.10 needs Python < 3.14 (the owner runs 3.14.3)
+crosscheck = ["ruptures==1.1.10; python_version < '3.14'"]
+# EXP-001 challenger. On an Intel Mac torch comes from conda-forge, not PyPI (see PROGRESS)
+neural = ["minimamba==1.0.1", "torch==2.14.1"]
 
 [project.scripts]
 sx-lab = "sx_lab.cli:main"

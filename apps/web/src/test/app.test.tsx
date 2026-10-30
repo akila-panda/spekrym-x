@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from '../App'
 import { useUi } from '../state/store'
 import { objects } from '../data/sample'
@@ -97,7 +98,8 @@ describe('premarket workspace', () => {
 
 describe('inspector', () => {
   it('has Insight, Evidence and Forecast tabs', async () => {
-    render(<App />)
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('offline'))))
+    render(<QueryClientProvider client={new QueryClient()}><App /></QueryClientProvider>)
     expect(screen.getByRole('tab', { name: 'Insight', selected: true })).toBeInTheDocument()
     await userEvent.click(screen.getByRole('tab', { name: 'Evidence' }))
     expect(screen.getByText('Setup id')).toBeInTheDocument()

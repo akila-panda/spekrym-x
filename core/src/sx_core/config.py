@@ -58,6 +58,8 @@ class Settings(BaseModel):
     ib_port: int = 7497
     ib_client_id: int = 1
     anthropic_api_key: SecretStr = SecretStr("")
+    groq_api_key: SecretStr = SecretStr("")
+    gemini_api_key: SecretStr = SecretStr("")
 
 
 def load_settings(env: Mapping[str, str] | None = None, dotenv_path: str | Path | None = None
@@ -81,4 +83,6 @@ def load_settings(env: Mapping[str, str] | None = None, dotenv_path: str | Path 
         ib_port=int(g("IB_PORT", "7497")),
         ib_client_id=int(g("IB_CLIENT_ID", "1")),
         anthropic_api_key=SecretStr(g("ANTHROPIC_API_KEY", "")),
+        groq_api_key=SecretStr(g("GROQ_API_KEY", "")),
+        gemini_api_key=SecretStr(g("GEMINI_API_KEY", "")),
     )

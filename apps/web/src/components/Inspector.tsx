@@ -7,6 +7,7 @@ import { semanticId } from '../data/toSetup'
 import { stamp } from '../layers/timeline'
 import { useUi, type InspectorTab } from '../state/store'
 import { Badge } from './Badge'
+import { ForecastTab } from './ForecastTab'
 
 const TABS: [InspectorTab, string][] = [['insight', 'Insight'], ['evidence', 'Evidence'], ['forecast', 'Forecast']]
 
@@ -34,7 +35,7 @@ export function Inspector() {
             className={`rounded-md px-2 py-1 text-sm ${inspectorTab === id ? 'bg-surface2 text-ink' : 'text-muted hover:text-ink'}`}>{label}</button>))}
       </div>
       <div role="tabpanel" id={`panel-${inspectorTab}`} aria-labelledby={`tab-${inspectorTab}`}>
-        {inspectorTab === 'forecast' ? <ForecastPlaceholder /> : !sel
+        {inspectorTab === 'forecast' ? <ForecastTab /> : !sel
           ? <p className="text-sm text-muted">Select an object to see why it was drawn.</p>
           : inspectorTab === 'insight' ? <Insight o={sel} ds={ds} refPrice={refPrice} atr={atr} /> : <Evidence o={sel} ds={ds} />}
       </div>
@@ -72,13 +73,5 @@ function Evidence({ o, ds }: { o: O; ds: Ds }) {
       <div className="flex flex-wrap gap-2"><Badge tone="warn">{ds.badge}</Badge><Badge>Causal</Badge></div>
       <dl className="space-y-1 text-sm">{rows.map(([k, v]) => <div key={k}><dt className="text-muted">{k}</dt><dd className="break-words font-mono text-xs">{v}</dd></div>)}</dl>
       <p className="text-xs text-muted">The id is a hash of semantic fields only, not of price, so it stays stable when the price moves.</p>
-    </div>)
-}
-function ForecastPlaceholder() {
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2"><Badge tone="warn">Placeholder</Badge><Badge>Exploratory</Badge><Badge>Not validated</Badge></div>
-      <p className="text-sm">No forecast exists yet. The Lab module (volatility and regime forecasts with intervals) is built in a later phase.</p>
-      <p className="text-xs text-muted">When it exists this tab will show an interval, the regime label, the track record and the number of variants tried. It will never show a bare probability.</p>
     </div>)
 }

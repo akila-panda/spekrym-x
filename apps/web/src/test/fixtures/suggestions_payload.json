@@ -1,0 +1,366 @@
+{
+ "status": "ok",
+ "instrument": "EUR_USD",
+ "tf": "H1",
+ "as_of": "2026-10-27T00:00:00Z",
+ "source": {
+  "id": "sample",
+  "name": "Test fixture",
+  "label": "TEST FIXTURE - NOT REAL SUGGESTIONS",
+  "live": false
+ },
+ "labels": [
+  "Exploratory",
+  "Not validated",
+  "Retrospective"
+ ],
+ "scorer": {
+  "stage": "validated",
+  "reading": "Validation only: AUC is NOT above the shuffled-label range, so the rank shows no demonstrated skill. The holdout has not been opened.",
+  "validation": {
+   "stage": "validation",
+   "model_sha256": "abc",
+   "variants_tried": 5,
+   "metrics": {
+    "n": 300,
+    "auc": 0.52,
+    "auc_ci95_iid": [
+     0.46,
+     0.58
+    ],
+    "target_first_share_all": 0.4,
+    "top_fifth_n": 60,
+    "top_fifth_target_first_share": 0.41
+   },
+   "shuffled_auc_p95": 0.56,
+   "controls_behaved": true
+  },
+  "holdout": null
+ },
+ "items": [
+  {
+   "suggestion": {
+    "id": "sug:t1",
+    "instrument": "EUR_USD",
+    "tf": "H1",
+    "created_at": "2026-10-27T00:00:00Z",
+    "setup_ids": [
+     "setup:t1"
+    ],
+    "side": "long",
+    "entry": 1.0836,
+    "stop": 1.0828,
+    "target": 1.0848,
+    "score": 71.4,
+    "reasons": [
+     {
+      "text": "Test fvg zone.",
+      "evidence_id": "setup:t1"
+     },
+     {
+      "text": "volatility (ATR relative to price) = 0.0004 raised the ranking score",
+      "evidence_id": "setup:t1"
+     }
+    ],
+    "gates": [
+     {
+      "name": "news_blackout",
+      "passed": true,
+      "detail": "ok"
+     },
+     {
+      "name": "max_open_trades",
+      "passed": true,
+      "detail": "ok (no paper account state loaded; assumed none; checked again when an order is placed)"
+     },
+     {
+      "name": "daily_loss_halt",
+      "passed": true,
+      "detail": "ok"
+     }
+    ],
+    "rules_version": "paper-v1-abc123",
+    "status": "not_validated"
+   },
+   "labels": [
+    "Exploratory",
+    "Not validated",
+    "Retrospective"
+   ],
+   "model_version": "m:fixture0001",
+   "note": "Rank against validation-period scores. A ranking only."
+  },
+  {
+   "suggestion": {
+    "id": "sug:t2",
+    "instrument": "EUR_USD",
+    "tf": "H1",
+    "created_at": "2026-10-27T00:00:00Z",
+    "setup_ids": [
+     "setup:t2"
+    ],
+    "side": "short",
+    "entry": 1.0836,
+    "stop": 1.0844,
+    "target": 1.0824,
+    "score": 42.0,
+    "reasons": [
+     {
+      "text": "Test order_block zone.",
+      "evidence_id": "setup:t2"
+     },
+     {
+      "text": "volatility (ATR relative to price) = 0.0004 raised the ranking score",
+      "evidence_id": "setup:t2"
+     }
+    ],
+    "gates": [
+     {
+      "name": "news_blackout",
+      "passed": true,
+      "detail": "ok"
+     },
+     {
+      "name": "max_open_trades",
+      "passed": true,
+      "detail": "ok (no paper account state loaded; assumed none; checked again when an order is placed)"
+     },
+     {
+      "name": "daily_loss_halt",
+      "passed": true,
+      "detail": "ok"
+     }
+    ],
+    "rules_version": "paper-v1-abc123",
+    "status": "not_validated"
+   },
+   "labels": [
+    "Exploratory",
+    "Not validated",
+    "Retrospective"
+   ],
+   "model_version": "m:fixture0001",
+   "note": "Rank against validation-period scores. A ranking only."
+  }
+ ],
+ "evidence": [
+  {
+   "id": "setup:t1",
+   "kind": "fvg",
+   "instrument": "EUR_USD",
+   "tf": "H1",
+   "direction": "bullish",
+   "geometry": {
+    "price_low": 1.081,
+    "price_high": 1.082,
+    "t_start": "2026-10-26T15:00:00Z"
+   },
+   "event_time": "2026-10-26T15:00:00Z",
+   "known_at": "2026-10-26T17:00:00Z",
+   "lifecycle": "fresh",
+   "source": {
+    "library": "test",
+    "version": "0",
+    "adapter": "fixture"
+   },
+   "plain_text": "Test fvg (bullish) zone.",
+   "invalidation": "A close beyond the far edge.",
+   "status": "causal"
+  },
+  {
+   "id": "setup:t2",
+   "kind": "order_block",
+   "instrument": "EUR_USD",
+   "tf": "H1",
+   "direction": "bearish",
+   "geometry": {
+    "price_low": 1.084,
+    "price_high": 1.085,
+    "t_start": "2026-10-26T18:00:00Z"
+   },
+   "event_time": "2026-10-26T18:00:00Z",
+   "known_at": "2026-10-26T20:00:00Z",
+   "lifecycle": "fresh",
+   "source": {
+    "library": "test",
+    "version": "0",
+    "adapter": "fixture"
+   },
+   "plain_text": "Test order_block (bearish) zone.",
+   "invalidation": "A close beyond the far edge.",
+   "status": "causal"
+  }
+ ],
+ "candles": [
+  {
+   "time": "2026-10-26T00:00:00Z",
+   "open": 1.0795,
+   "high": 1.0801,
+   "low": 1.0792,
+   "close": 1.0797
+  },
+  {
+   "time": "2026-10-26T01:00:00Z",
+   "open": 1.0799,
+   "high": 1.0805,
+   "low": 1.0796,
+   "close": 1.0801
+  },
+  {
+   "time": "2026-10-26T02:00:00Z",
+   "open": 1.0803,
+   "high": 1.0809,
+   "low": 1.08,
+   "close": 1.0805
+  },
+  {
+   "time": "2026-10-26T03:00:00Z",
+   "open": 1.08,
+   "high": 1.0806,
+   "low": 1.0797,
+   "close": 1.0802
+  },
+  {
+   "time": "2026-10-26T04:00:00Z",
+   "open": 1.0804,
+   "high": 1.081,
+   "low": 1.0801,
+   "close": 1.0806
+  },
+  {
+   "time": "2026-10-26T05:00:00Z",
+   "open": 1.0808,
+   "high": 1.0814,
+   "low": 1.0805,
+   "close": 1.081
+  },
+  {
+   "time": "2026-10-26T06:00:00Z",
+   "open": 1.0805,
+   "high": 1.0811,
+   "low": 1.0802,
+   "close": 1.0807
+  },
+  {
+   "time": "2026-10-26T07:00:00Z",
+   "open": 1.0809,
+   "high": 1.0815,
+   "low": 1.0806,
+   "close": 1.0811
+  },
+  {
+   "time": "2026-10-26T08:00:00Z",
+   "open": 1.0813,
+   "high": 1.0819,
+   "low": 1.081,
+   "close": 1.0815
+  },
+  {
+   "time": "2026-10-26T09:00:00Z",
+   "open": 1.081,
+   "high": 1.0816,
+   "low": 1.0807,
+   "close": 1.0812
+  },
+  {
+   "time": "2026-10-26T10:00:00Z",
+   "open": 1.0814,
+   "high": 1.082,
+   "low": 1.0811,
+   "close": 1.0816
+  },
+  {
+   "time": "2026-10-26T11:00:00Z",
+   "open": 1.0818,
+   "high": 1.0824,
+   "low": 1.0815,
+   "close": 1.082
+  },
+  {
+   "time": "2026-10-26T12:00:00Z",
+   "open": 1.0815,
+   "high": 1.0821,
+   "low": 1.0812,
+   "close": 1.0817
+  },
+  {
+   "time": "2026-10-26T13:00:00Z",
+   "open": 1.0819,
+   "high": 1.0825,
+   "low": 1.0816,
+   "close": 1.0821
+  },
+  {
+   "time": "2026-10-26T14:00:00Z",
+   "open": 1.0823,
+   "high": 1.0829,
+   "low": 1.082,
+   "close": 1.0825
+  },
+  {
+   "time": "2026-10-26T15:00:00Z",
+   "open": 1.082,
+   "high": 1.0826,
+   "low": 1.0817,
+   "close": 1.0822
+  },
+  {
+   "time": "2026-10-26T16:00:00Z",
+   "open": 1.0824,
+   "high": 1.083,
+   "low": 1.0821,
+   "close": 1.0826
+  },
+  {
+   "time": "2026-10-26T17:00:00Z",
+   "open": 1.0828,
+   "high": 1.0834,
+   "low": 1.0825,
+   "close": 1.083
+  },
+  {
+   "time": "2026-10-26T18:00:00Z",
+   "open": 1.0825,
+   "high": 1.0831,
+   "low": 1.0822,
+   "close": 1.0827
+  },
+  {
+   "time": "2026-10-26T19:00:00Z",
+   "open": 1.0829,
+   "high": 1.0835,
+   "low": 1.0826,
+   "close": 1.0831
+  },
+  {
+   "time": "2026-10-26T20:00:00Z",
+   "open": 1.0833,
+   "high": 1.0839,
+   "low": 1.083,
+   "close": 1.0835
+  },
+  {
+   "time": "2026-10-26T21:00:00Z",
+   "open": 1.083,
+   "high": 1.0836,
+   "low": 1.0827,
+   "close": 1.0832
+  },
+  {
+   "time": "2026-10-26T22:00:00Z",
+   "open": 1.0834,
+   "high": 1.084,
+   "low": 1.0831,
+   "close": 1.0836
+  },
+  {
+   "time": "2026-10-26T23:00:00Z",
+   "open": 1.0838,
+   "high": 1.0844,
+   "low": 1.0835,
+   "close": 1.084
+  }
+ ],
+ "rejected": [],
+ "note": "Levels use the 9A barrier multiples; no costs; advice only, no order placed."
+}

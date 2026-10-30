@@ -1,8 +1,9 @@
 """Turn a fitted Lab model into contract ``Forecast`` records (Phase 7B).
 
 Units: ``point`` and the interval are per-bar volatility, i.e. sqrt of the mean squared log
-return over the next ``horizon`` bars. The interval is NOT conformal (that is Phase 8): it is
-the training-set quantile band of target/prediction ratios, widened if needed so the point lies
+return over the next ``horizon`` bars. The default interval is NOT conformal (pass
+``conformal`` for the 8A band): it is the training-set quantile band of
+target/prediction ratios, widened if needed so the point lies
 inside (the contract requires that). Its empirical coverage on the frame is measured and
 reported in ``track_record``; do not read ``nominal_coverage`` as a guarantee.
 Status is always ``exploratory``.
@@ -19,6 +20,7 @@ import pandas as pd
 from sx_core.contracts import Forecast, forecast_id
 from sx_core.contracts.forecast import BaselineComparison, Interval, ModelRef, TrackRecord
 from sx_lab.baselines.base import Baseline
+from sx_lab.calibration.conformal import SplitConformal
 from sx_lab.evaluation.metrics import qlike
 
 VERSION = "sx-lab-7b"
@@ -30,13 +32,24 @@ def params_hash(params: dict[str, object]) -> str:
 
 
 def make_forecasts(model: Baseline, baseline: Baseline, train: pd.DataFrame, val: pd.DataFrame,
-                   *, instrument: str, tf: str, variants_tried: int, nominal: float = 0.8
-                   ) -> list[Forecast]:
-    """``model`` and ``baseline`` must already be fitted on ``train`` only."""
-    ratio = train["target"].to_numpy() / model.predict(train).to_numpy()
-    q_lo, q_hi = np.quantile(ratio, [(1 - nominal) / 2, 1 - (1 - nominal) / 2])
+                   *, instrument: str, tf: str, variants_tried: int, nominal: float = 0.8,
+                   conformal: SplitConformal | None = None) -> list[Forecast]:
+    """``model`` and ``baseline`` must already be fitted on ``train`` only.
+
+    With ``conformal`` (calibrated on rows that are not in ``val``) the interval is the split-
+    conformal band and ``nominal`` comes from it; without it the 7B training-quantile band is
+    used (not conformal). Either way the point is forced inside the band, and the measured
+    coverage on ``val`` is stored, never assumed.
+    """
     pred = model.predict(val).to_numpy()
-    lo, hi = np.minimum(pred * q_lo, pred), np.maximum(pred * q_hi, pred)
+    if conformal is not None:
+        nominal = conformal.nominal
+        lo, hi = conformal.interval(pred)
+    else:
+        ratio = train["target"].to_numpy() / model.predict(train).to_numpy()
+        q_lo, q_hi = np.quantile(ratio, [(1 - nominal) / 2, 1 - (1 - nominal) / 2])
+        lo, hi = pred * q_lo, pred * q_hi
+    lo, hi = np.minimum(lo, pred), np.maximum(hi, pred)
     y = val["target"].to_numpy()
     coverage = float(np.mean((y >= lo) & (y <= hi)))
     delta = qlike(pred, y) - qlike(baseline.predict(val), val["target"])

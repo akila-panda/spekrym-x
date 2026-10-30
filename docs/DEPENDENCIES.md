@@ -51,6 +51,16 @@ The OANDA request and response shapes in `sx_data/oanda_parse.py` and `oanda_res
 
 smartmoneyconcepts, TA-Lib and trendln source or behaviour was read or run before adoption: the SMC source was read function by function (`swing_highs_lows`, `bos_choch`, `fvg`, `ob`, `liquidity`); trendln's return value was read from its source and confirmed by running it; TA-Lib candle functions were verified only through the causality harness and the labelled candle fixture. The library list "planned" below keeps the rest.
 
+## Python adopted in Phase 8A (checked 2026-10-27 in the sandbox, Python 3.12.3; `pip-audit` NOT run)
+| Package | Pinned | Licence (package metadata) | Used by | What was actually checked |
+|---|---|---|---|---|
+| statsmodels | 0.15.0 | BSD-3-Clause | `lab/regime/markov_switching.py` | By running: `MarkovRegressionResults` has no `apply`; `MarkovRegression(new_y).filter(params)` returns filtered marginal probabilities that equal the prefix results (Phase 2 harness test); default start values gave a degenerate fit, so start values are set from the data. Source not read beyond this |
+| ruptures | 1.1.10 (optional extra `crosscheck`, Python < 3.14 only) | BSD-2-Clause | tests only | **NOT installable on the owner's Python 3.14.3** (requires < 3.14; the 1.1.11rc1 pre-release allows only `<=3.14`, which excludes 3.14.x). Found by the owner's `pip install -e lab` on 2026-10-27. Replaced in `changepoints_offline.py` by an in-house exact PELT (L2 cost), tested against brute force. In the sandbox ruptures matched it in 117 of 120 random cases; in the other 3 the in-house result had a strictly lower objective, so ruptures' pruning is not exact with `min_size` |
+| PyYAML | 6.0.3 | MIT | `lab/spec.py` (`safe_load` only) | Behaviour of `safe_load` and `safe_dump` used in tests |
+| arch (MCS part) | 8.0.0 (already pinned) | NCSA (metadata) | `lab/evaluation/model_confidence_set.py` | `MCS.__init__` source read: bootstrap indices drawn once at construction (seed deterministic), default block `int(sqrt(T))`, needs 2+ columns. A known-answer run excludes a clearly worse model |
+
+On the owner's Mac (Intel, Python 3.14.3): statsmodels 0.15.0 installed (pip reported it satisfied); ruptures failed as described; PyYAML 6.0.3 was not reached by that pip run and is unconfirmed. PyTorch/minimamba remain outside the repo venv (conda-forge env, see the 8A feasibility notes).
+
 ## Python (planned, not yet installed)
 | Package | Module | Why | Flags |
 |---|---|---|---|
@@ -79,3 +89,21 @@ Web: `@tanstack/react-query` ^5 (installed 5.105.0). Python extra `assistant[rep
 | optuna | 5.0.0 | MIT (classifier) | `sx_lab.search.optuna_search` |
 
 Transitive and NOT pinned by us: scipy 1.18.1, statsmodels 0.15.0 (via arch); SQLAlchemy 2.1.6, alembic 1.20.1, colorlog, tqdm, PyYAML (via optuna). Optuna's database stack is heavier than this use needs (in-memory study only); swap for an in-house grid search if that bothers you. Source reading was partial (see PROGRESS 7B).
+
+## Phase 9A (checked 2026-10-28 in the sandbox, Linux x86_64, Python 3.12.3)
+| Package | Pinned | Licence (metadata, no legal review) | Used by | What I checked |
+|---|---|---|---|---|
+| lightgbm | 4.7.0 | MIT (not in the wheel metadata field; unconfirmed) | `model/train_lgbm.py` | Native `lgb.train` with `num_threads=1, deterministic=True, force_row_wise=True`: two fits on the same data gave identical predictions. Wheel `py3-none-macosx_10_15_x86_64` exists. The macOS wheel may need `libomp` (`brew install libomp`) at import time: UNCONFIRMED on the owner's Mac. |
+| shap | 0.54.1 | MIT | `model/explain_shap.py` | Wheel `cp312-abi3-macosx_10_13_x86_64` exists (covers 3.12 to 3.14). It does NOT require numba (requires cloudpickle, numpy, packaging, pandas, scikit-learn, scipy, slicer, tqdm). For a binary LightGBM booster, `TreeExplainer.shap_values` returned an (n, features) array on the raw-margin scale, and base + sum of contributions equalled the booster's raw score; it also matched LightGBM's own `pred_contrib`. It prints a warning about "a list of ndarray" that is wrong for this version; the adapter silences exactly that message and re-checks shape and additivity on every call. |
+
+Intel-Mac cp314 wheels were confirmed to exist (by `pip download --platform`, not by installing on a Mac) for scikit-learn 1.9.1, scipy 1.18.1, numpy 2.5.4 and pandas 3.1.0. Pure-Python transitive packages: slicer 0.0.8, cloudpickle 3.1.2, narwhals 2.28.0, tqdm 4.70.1. Transitive packages are not pinned by us. Not run through `pip-audit`. Source reading of both libraries was limited to the behaviour above, not their internals. Install with `pip install -e "assistant[dev,model]"` (new extra `model`).
+
+
+
+## Phase 9C-1 (analyst), 2026-10-28
+| Item | Version | Licence | Notes |
+|---|---|---|---|
+| httpx | 0.28.1 (already pinned by `data`; now also listed in `assistant`) | BSD-3-Clause | Direct HTTPS calls to the two providers; no vendor SDK is used. |
+| Groq API (OpenAI-compatible) | base `https://api.groq.com/openai/v1` | service terms, not reviewed | Endpoint paths and the 429 `retry-after` / `x-ratelimit-*` headers were read from Groq docs on 2026-10-28; request parameter `max_completion_tokens` and the reply shape are the OpenAI-compatible ones and are UNVERIFIED against the live API. Groq's rate-limit page lists Developer-plan limits only. |
+| Gemini API | `https://generativelanguage.googleapis.com/v1beta`, header `x-goog-api-key` | service terms, not reviewed | Endpoint and header read from Google docs on 2026-10-28; `systemInstruction`, `generationConfig` and `usageMetadata` names are UNVERIFIED against the live API. Free-tier limits and data-use terms not reviewed. |
+No Anthropic SDK, Pydantic AI, Cloudflare or OpenRouter dependency was added.

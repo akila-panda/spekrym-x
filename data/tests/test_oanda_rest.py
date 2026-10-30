@@ -107,7 +107,7 @@ def test_rate_limit_retries_honour_retry_after(m1_payload):
     got = client(srv, sleep=sleeps.append, page_size=1000).fetch_candles("EUR_USD", "M1", T0, END)
     assert len(got) == 175
     assert 3.0 in sleeps  # waited what the server asked
-    assert len(srv.requests) == 3
+    assert len(srv.requests) == 4  # 2 failures, the data page, then one empty page that ends it
 
 
 def test_gives_up_after_max_retries(m1_payload):
@@ -167,3 +167,19 @@ def test_body_that_is_not_an_object_is_rejected(m1_payload):
     srv.script = [httpx.Response(200, content=json.dumps([1, 2]))]
     with pytest.raises(OandaError):
         client(srv).fetch_candles("EUR_USD", "M1", T0, END)
+
+
+def test_a_short_follow_up_page_does_not_end_the_download(m1_payload, m1_closed):
+    """Real-API regression: a follow-up page one candle short must not stop paging."""
+    class ShortPages(Server):
+        def __call__(self, req):
+            resp = super().__call__(req)
+            if req.url.params["includeFirst"] == "false":
+                body = resp.json()
+                body["candles"] = body["candles"][:-1] if len(body["candles"]) > 1 else []
+                return httpx.Response(200, json=body)
+            return resp
+    srv = ShortPages(m1_payload)
+    got = client(srv, page_size=50).fetch_candles("EUR_USD", "M1", T0, END)
+    assert [c.time for c in got][:3] == [c.time for c in m1_closed][:3]
+    assert len(got) >= 150 and len(srv.requests) >= 4

@@ -1,0 +1,181 @@
+{
+ "holdout": {
+  "conformal": {
+   "har": {
+    "caveat": "test",
+    "empirical": 0.7,
+    "mean_width_ratio": 1.5,
+    "n": 10,
+    "n_calibration": 5,
+    "nominal": 0.8,
+    "worst_rolling_50": null
+   },
+   "minimamba": {
+    "caveat": "test",
+    "empirical": 0.7,
+    "mean_width_ratio": 1.5,
+    "n": 10,
+    "n_calibration": 5,
+    "nominal": 0.8,
+    "worst_rolling_50": null
+   }
+  },
+  "data_label": "TEST FIXTURE - NOT EXP-001 RESULTS",
+  "data_version": "dv:test",
+  "experiment": "EXP-001",
+  "labels": "Exploratory | Not validated | Retrospective",
+  "mcs": {
+   "block_size": 24,
+   "excluded": [
+    "garch11",
+    "historical_mean",
+    "persistence"
+   ],
+   "included": [
+    "har",
+    "minimamba"
+   ],
+   "level": 0.1,
+   "n": 10,
+   "pvalues": {
+    "garch11": 0.01,
+    "har": 1.0,
+    "historical_mean": 0.01,
+    "minimamba": 1.0,
+    "persistence": 0.01
+   },
+   "reps": 1000,
+   "seed": 1
+  },
+  "n_holdout": 10,
+  "outcome": "tie",
+  "reason": "test",
+  "scores": {
+   "garch11": {
+    "qlike": 0.4,
+    "rmse": 3e-07
+   },
+   "har": {
+    "qlike": 0.2,
+    "rmse": 1e-07
+   },
+   "historical_mean": {
+    "qlike": 0.5,
+    "rmse": 4e-07
+   },
+   "minimamba": {
+    "qlike": 0.3,
+    "rmse": 2e-07
+   },
+   "persistence": {
+    "qlike": 0.6,
+    "rmse": 5e-07
+   }
+  },
+  "spec_hash": "0000000000000000test",
+  "stage": "holdout",
+  "variants_tried": 3
+ },
+ "report_present": true,
+ "status": "complete",
+ "validation": {
+  "conformal": {
+   "har": {
+    "caveat": "test",
+    "empirical": 0.7,
+    "mean_width_ratio": 1.5,
+    "n": 10,
+    "n_calibration": 5,
+    "nominal": 0.8,
+    "worst_rolling_50": null
+   },
+   "minimamba": {
+    "caveat": "test",
+    "empirical": 0.7,
+    "mean_width_ratio": 1.5,
+    "n": 10,
+    "n_calibration": 5,
+    "nominal": 0.8,
+    "worst_rolling_50": null
+   }
+  },
+  "data_label": "TEST FIXTURE - NOT EXP-001 RESULTS",
+  "data_version": "dv:test",
+  "experiment": "EXP-001",
+  "labels": "Exploratory | Not validated | Retrospective",
+  "mcs": {
+   "block_size": 24,
+   "excluded": [
+    "minimamba",
+    "garch11",
+    "historical_mean",
+    "persistence"
+   ],
+   "included": [
+    "har"
+   ],
+   "level": 0.1,
+   "n": 10,
+   "pvalues": {
+    "garch11": 0.01,
+    "har": 1.0,
+    "historical_mean": 0.01,
+    "minimamba": 0.01,
+    "persistence": 0.01
+   },
+   "reps": 1000,
+   "seed": 1
+  },
+  "n_validation": 10,
+  "outcome": "loss",
+  "per_seed_qlike_diagnostic": {
+   "seed1": 0.3,
+   "seed2": 0.31,
+   "seed3": 0.32
+  },
+  "scores": {
+   "garch11": {
+    "qlike": 0.4,
+    "rmse": 3e-07
+   },
+   "har": {
+    "qlike": 0.2,
+    "rmse": 1e-07
+   },
+   "historical_mean": {
+    "qlike": 0.5,
+    "rmse": 4e-07
+   },
+   "minimamba": {
+    "qlike": 0.3,
+    "rmse": 2e-07
+   },
+   "persistence": {
+    "qlike": 0.6,
+    "rmse": 5e-07
+   }
+  },
+  "spec_hash": "0000000000000000test",
+  "stage": "validation",
+  "train_config": {
+   "batch_size": 64,
+   "epochs": 2,
+   "lr": 0.001
+  },
+  "train_loss_by_epoch": {
+   "seed1": [
+    0.3,
+    0.1
+   ],
+   "seed2": [
+    0.3,
+    0.1
+   ],
+   "seed3": [
+    0.3,
+    0.1
+   ]
+  },
+  "variants_tried": 3
+ }
+}

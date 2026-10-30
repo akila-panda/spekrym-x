@@ -2,9 +2,27 @@
 
 **Purpose of this file:** everything a new Claude session (chat or Claude Code) needs to continue the build without the earlier conversation. Read this first, then `docs/PROGRESS.md`, then the docs it points to.
 
-Last updated: 2026-10-27 (Phase 4 built; then the pre-Phase-5 pass: P10, I10, I15, issue 27; see `docs/PROGRESS.md`).
+Last updated: 2026-10-28 (Phase 9C-1 analyst core built, P6 resolved; earlier: 9B Suggestions screen bug fixed, 9A holdout NULL; earlier: Phase 9B code built, no real scorer yet; Phase 9A real-data run in progress on the owner's Mac; earlier same day: Phase 8 closed, Phase 9 split into 9A/9B/9C, X16 and X17; EXP-001 run and shown; earlier: EXP-001 locked; earlier: Phase 8A built; earlier: Phases 0 to 7B; see `docs/PROGRESS.md`).
 
 ## 0. Start here (new session, 60 seconds)
+
+**NEXT (2026-10-28, Phase 9C-2 built): persisted provider state, daily caps, brief reuse, `AnalystService` and `/analyst/*` API routes are built and pass 62 analyst tests in my sandbox; no real provider call has been made by me. Owner's 9C-1 run: `check` accepted both keys. Owner still has to confirm the free plans in `approved_models.json` (Gemini shows Free tier; Groq plan not yet seen), run `brief`, and ROTATE both keys (they were pasted in chat). Next: 9C-3 (bull/bear step, brief drawer in the web app, fixed evaluation set) only when the owner says go; A8 (data terms) is still open.**
+
+**NEXT (2026-10-28, Phase 9C-1 built): P6 is RESOLVED (A1: zero-cost router, Groq and Gemini first). The analyst core is BUILT (interface, Groq and Gemini adapters, evidence packet, validator, router, offline demo; 46 mocked tests pass in my sandbox) but has NOT called the real providers. Owner runs the steps under 'Phase 9C-1 notes' in PROGRESS (add keys to `.env`, confirm free plan in `approved_models.json`, `check`, `brief`). The keys were pasted in chat: rotate them. Next: 9C-2 (second provider hardening, persisted quota and cooldown state, API route) and 9C-3 (bull/bear step, brief drawer, evaluation set) only when the owner says go; A8 (data terms) is open.**
+
+**NEXT (2026-10-28, dataset management): Lab Data tab can delete (to trash), restore and lock in-use datasets (L24, see 'Dataset management' in PROGRESS). Owner tries it. P6 still blocks 9C.**
+
+**NEXT (2026-10-28, 9B bug fix): 9A has been RUN: holdout opened once, NULL (AUC 0.506, shuffled p95 0.520). The Suggestions screen was empty because the API sent `forecast_id: null`; fixed with `to_wire()` (see 'Phase 9B fix and 9A result' in PROGRESS). Next: owner reloads the screen (9B done-when), decides S7 and P6; then 9C. Do not retrain or re-open the holdout.**
+
+**NEXT (2026-10-28, Phase 9B built): Phase 9B CODE IS BUILT (suggestions engine, evidence rules, advisory gates, real `/suggestions` route, Suggestions screen; decisions S1 to S8). Verified in my sandbox only on synthetic fixtures (new Python tests 10 passed, API 37 passed, ruff clean, web 91 passed, build OK). It has NOT been run with a real scorer or reviewed in a browser. The owner's 9A `validate` was still running at the last log (4320/12864 setups); its output and the controls are unknown to me and the holdout is NOT opened (open it once, only after the validation output has been read). libomp on the Intel Mac was fixed by a symlink into the conda env (see 'Owner environment fix' in PROGRESS). The Command Line Tools were deleted and not reinstalled. Next: owner reviews the Suggestions screen (9B done-when), then 9C only after P6 is decided. Open question S7: should a null 9A result hide the suggestion list?**
+
+**(Superseded) NEXT (2026-10-28, Phase 9A built): Phase 9A CODE IS BUILT (model, protocol P11, controls, scorer, Lab badge fix X17) and tested on synthetic fixtures only; it has NOT been run on real data. The owner runs `validate`, reads it, then opens the holdout once (see 'Phase 9A notes' at the end of docs/PROGRESS.md for the order). P11 is CONFIRMED. 9B (suggestions engine) starts only when the owner says go; it needs a 9A result (even a null one) to read. 9C stays blocked on P6. Plan file names differ from the code (`labels.py` vs `labels_triple_barrier.py`, `train.py` vs `train_lgbm.py`, `reasons.py` vs `explain_shap.py`): the code names are kept (M9).**
+
+**(Superseded) NEXT (2026-10-28, docs-only update done): Phase 8 is CLOSED PENDING the owner's commit and close-out checks (X16). Phase 9 is split (X17): build 9A (`assistant/model`) next, only when the owner says go. 9C is blocked on P6. The Lab badge fix is CONFIRMED (presentation-only, see X17). The 9A evaluation protocol (P11) is still unconfirmed; ask first. See section 5a.**
+
+**LATEST (2026-10-28, end of day): EXP-001 HAS BEEN RUN. Validation LOSS, holdout TIE (headline, L22); holdout spent; L21 to L23 confirmed. Phase 8C (web Lab EXP-001 tab, Forecast tab, API `/lab/exp001`) is BUILT, owner has not run it. Phase 9 is next only when the owner says go and decides P6 (Pydantic AI vs Anthropic SDK). See 'EXP-001 RESULT' and 'Phase 8C notes' at the end of docs/PROGRESS.md. Older notes below are superseded.**
+
+**LATEST (2026-10-28, later): Phase 8B CODE IS BUILT (runner, MiniMamba wrapper, report, tests; 10 new tests pass in the sandbox) but EXP-001 has NOT been run. The owner runs `sx-lab exp001-validate`, reviews, then `exp001-holdout`; see 'Phase 8B build notes' at the end of docs/PROGRESS.md and decisions L21 to L23.** (Earlier today: EXP-001 is APPROVED AND LOCKED (spec 7a541633a9161018, real OANDA practice H1, 12,864 bars, holdout sealed). Phase 8A is done; Phase 8B is next only when the owner says go. Read 'START HERE FOR PHASE 8B' at the end of docs/PROGRESS.md first; it has the full 8B handoff and the open compute decision (rerun full suite, where MiniMamba trains, regenerate the OANDA token).** (Older note, now superseded: Phase 8A is BUILT but NOT complete. Code and tests are done (130 Lab+data tests passed in the sandbox; owner has not run them). Still open: no real data has ever been imported, and `lab/experiments/prereg/EXP-001.yaml` is a DRAFT that cannot lock until the owner fills `data.*`, reviews the PROPOSED values and approves it. Phase 8B must not start until the spec is locked (`sx-lab lock`). Phases 5, 6 and 7 are built (the status text below this note is older; trust `docs/PROGRESS.md`). Do not recreate a standalone `DEVELOPMENT_PLAN.md` upload; this file is the one.
 
 **Status:** Phases 0 to 4 built, plus a pre-Phase-5 pass (2026-10-27): P10 built as X14, I10 approved, I15 definitions built (numbers still unapproved), issue 27 replay about 4 to 5 times faster. Phase 5 is split in two (owner request, 2026-10-27): **5A (backend: premarket builder + API) is BUILT and owner-verified** (454 passed, ruff clean, endpoints and live-mode refusal checked, 2026-10-27); next build is **5B (web hookup, multi-timeframe strip, ATR, static brief) is BUILT** (owner has not yet run it); next is the owner's visual review, then Phase 6 only when the owner says go. **Phase 5 data source (owner, 2026-10-27): frozen EUR/USD fixtures labelled `SAMPLE DATA — NOT LIVE` on every surface, behind a data-source interface so a verified provider can be added later; do not call the OANDA client working until it has fetched real candles.** **Chart zone pass (2026-10-27): FVG, order-block and BOS/CHoCH drawing BUILT, awaiting the owner's browser look.** **Phase 6 is split (2026-10-27): 6A (simulator core) is BUILT and owner-verified (473 passed, ruff clean, live-mode refusal checked, 2026-10-27); 6B (risk gates, frozen rules, runner) is BUILT and owner-verified (487 passed, ruff clean, freeze hash and changed-rules refusal checked, 2026-10-27); Phase 7 only when the owner says go.** **Housekeeping 2026-10-27:** owner's suite is 461 passed; the root `pyproject.toml` was missing and has been reconstructed (I25), which explains the 70 ruff findings; root `README` and `Makefile` are also missing. Open items: first run against the real OANDA practice API (issue 18, account access unconfirmed), the Phase 1 visual review (light mode bands, label overlap) and P8.
 
@@ -252,8 +270,8 @@ Each phase lists: goal, work, tests, done-when. Phases are ordered by dependency
 - Web: Lab screen and the Forecast tab (interval, regime label, track record, variants tried, "Exploratory / Not validated").
 - Done when: EXP-001 is run once under the pre-registered spec and reported with the model confidence set and coverage.
 
-### Phase 9 — `assistant/model`, `analyst`, `suggestions`
-**Goal:** evidence-linked suggestions, clearly labelled as unvalidated.
+### Phase 9 — `assistant/model`, `analyst`, `suggestions` (SPLIT into 9A, 9B, 9C, see section 5a)
+**Goal:** evidence-linked suggestions, clearly labelled as unvalidated. Original scope kept below; the split in section 5a says what is built when.
 - `model/`: triple-barrier labels, features, LightGBM with time-ordered splits and a gap, SHAP reasons, `scorer.py` (score + reasons; heuristic ranking, **not** a probability).
 - `analyst/`: typed LLM output (Pydantic AI or the Anthropic SDK; decide per P6). Reads structured inputs only; writes the premarket brief and rationale; never picks trades or invents numbers. `debate.py` bull/bear challenge step. Prompts in `prompts/`.
 - `suggestions/engine.py`: combines Setups, score and Lab forecast into `Suggestion`. `evidence.py`: every claim links to a setup or forecast id. Gates from Phase 6 apply.
@@ -270,6 +288,31 @@ Each phase lists: goal, work, tests, done-when. Phases are ordered by dependency
 
 ---
 
+## 5a. Phase 9 split (owner, 2026-10-28, decision X17)
+
+Each part is built, verified, documented and handed over before the next starts. 9A is built (code and synthetic tests; real-data run in progress on the owner's Mac). 9B is built (synthetic tests only; no real scorer yet). 9C is not started.
+
+### Phase 9A: model and scorer (no LLM, does not need P6) — CODE BUILT 2026-10-28, real-data run pending (see PROGRESS 'Phase 9A notes'; known limits 9A-1 to 9A-10)
+- **First:** sandbox-install `lightgbm` and `shap`, read what they do, check Python 3.12 to 3.14 and the owner's Intel Mac (LightGBM may need `brew install libomp`; unconfirmed), pin versions, record in `docs/DEPENDENCIES.md`. Adapters around both; no invented library behaviour.
+- `assistant/model/labels.py`: triple-barrier labels (ATR-scaled barriers, time barrier). Labels use FUTURE bars by design and are training targets only; they never enter features. `features.py`: causal features from `Setup` objects, sessions, ATR, time of day, all with `known_at <= t` (prefix-equality harness applies).
+- `train.py`: LightGBM with chronological splits, a purge and embargo gap at least the label horizon, and a sealed holdout reachable only through one logged call (reuse the Lab partition ideas; do not import Lab code across modules, share through `core/` or files). `reasons.py`: SHAP reasons. `scorer.py`: score plus reasons, a heuristic ranking, never a probability.
+- Negative controls must FAIL as they should: shuffled labels and a deliberately leaked feature. Report variants tried. Labels: Exploratory, Not validated, Retrospective. A weak or null result is a valid result.
+- Web fix (CONFIRMED by the owner, presentation-only, X17): on the Lab screen hide the premarket "Sample data" badge and "SAMPLE DATA - NOT LIVE" status text, because they describe the chart sample, not the Lab. Provenance stays in the data and on every other screen. The Lab screen shows the accurate label of what it displays (the EXP-001 data label; each dataset's own label). Any Lab view that shows sample or synthetic data must say so there. Test both directions.
+- **Done when:** causality tests pass on every feature, negative controls fail correctly, a score always carries reasons and a label, no probability wording anywhere, and results come with the honest numbers (including a null result if that is what the data says).
+
+### Phase 9B: suggestions engine and evidence — CODE BUILT 2026-10-28, owner review pending (see PROGRESS 'Phase 9B notes'; known limits 9B-1 to 9B-8)
+- `suggestions/engine.py` combines Setups, the 9A score and the Lab result into a `Suggestion` (contract additive changes only, recorded in `docs/CONTRACTS.md`). `evidence.py`: every claim links to a setup or forecast id; a claim without evidence is rejected. The Phase 6 risk gates apply to every order path.
+- Web: Suggestions screen with evidence links that highlight objects on the chart; labels Not validated on every suggestion; no bare percentages.
+- **Done when:** a suggestion's every claim resolves to an id and a claim without evidence is rejected (tests), and the screen is reviewed by the owner.
+
+### Phase 9C: analyst (needs P6 decided first)
+- `analyst/`: typed LLM output through an adapter (Pydantic AI or the Anthropic SDK per P6; Claude leans SDK). Structured inputs only; writes the premarket brief and rationale; never picks trades or invents numbers; `debate.py` bull/bear challenge; prompts in `prompts/`. Needs an API key in `.env` (never logged).
+- Web: analyst brief drawer with claim-to-object linking.
+- **Done when:** every sentence of a brief that states a fact resolves to an id or is rejected; the analyst cannot emit a number that is not in its inputs (test with a poisoned input).
+
+## 5b. LATER-PHASE BACKLOG (not built, not scheduled, NOT part of Phase 8)
+Moved here when Phase 8 closed (X16): `nf_baselines.py` (NHITS, PatchTST, LSTM), `chronos_zeroshot.py`, `mamba_ssm_vol.py` (CUDA GPU needed), web display of the regime label and changepoints, an EXP-002 with a different MiniMamba recipe (early stopping, dropout, smaller model; own pre-registered spec). Also still open from earlier: first real-API checks beyond the OANDA practice download, light-theme contrast (P8), regenerating the OANDA token, reading OANDA's terms before sharing data files, npm audit review (Phase 10), code-splitting the 552 kB web bundle (Phase 10).
+
 ## 6. Open decisions (ask the owner when a phase needs them)
 - **P1** Lab goal = volatility/regime (proposed, unconfirmed).
 - **P2** Holdout in `lab/partition.py`: 60/20/20 (proposed).
@@ -280,7 +323,8 @@ Each phase lists: goal, work, tests, done-when. Phases are ordered by dependency
 - **I15 numbers** (doji, pin bar, engulfing thresholds, ATR proximity): provisional configurable defaults, kept by the owner 2026-10-27; not calibrated.
 - **P8** Light-theme contrast (still open).
 - **P5** Paper backends: simulator, then OANDA practice, IB later.
-- **P6** LLM layer: Pydantic AI vs Anthropic SDK directly.
+- **P6** LLM layer: Pydantic AI vs Anthropic SDK directly. **Blocks 9C only; decide before 9C.** Claude leans SDK behind an adapter.
+- ~~P11~~ Confirmed 2026-10-28: 9A evaluation protocol (chronological train / validation / sealed holdout, documented purge gap, one logged opening, separate reporting). Built as M1 to M10 in `docs/DECISIONS.md`.
 - GPU availability for the official Mamba reference.
 - Whether to use forex-pytory for the calendar or a plain JSON feed.
 
@@ -332,7 +376,7 @@ More Lab known issues:
 
 Phase 8 is divided in two so each piece fits a session and so the experiment spec is frozen BEFORE any challenger model exists. Nothing below is built yet. Phase 8 question is unchanged: **does Mamba beat HAR and GARCH on volatility?** A documented tie or loss is a valid result.
 
-### Phase 8A: experiment infrastructure and the frozen spec (no neural models)
+### Phase 8A: experiment infrastructure and the frozen spec (no neural models) — BUILT 2026-10-27, spec NOT locked (see section 0 and PROGRESS)
 **Goal:** everything EXP-001 needs except the challengers, plus the pre-registration committed first.
 - **Feasibility spike (first, before any code):** can the challengers run at all on the owner's machine? `minimamba` needs PyTorch, and the owner's Mac is Intel (x86_64, Python 3.14.3). I believe recent PyTorch releases have no Intel-Mac wheels; this is UNVERIFIED. Check in the sandbox and on the Mac, and record the answer in `docs/DEPENDENCIES.md`. If it cannot run locally, decide where EXP-001 runs (Linux box, rented CPU/GPU, Colab) before building 8B.
 - **Real data path:** EXP-001 must not run on the synthetic fixture. Decide the data source (OANDA practice is unconfirmed, issues 18 and 24; alternatives: Dukascopy export, another broker's demo, owner-supplied CSV/Parquet) and add an importer through `sx_data`/`sx_core.storage` with quality checks. Add the **weekend/gap policy** for features and targets (known issue L-2).
@@ -344,7 +388,7 @@ Phase 8 is divided in two so each piece fits a session and so the experiment spe
 - Tests: conformal coverage on frozen fixtures, MCS on a known-answer fixture, regime filtered-only causality, spec-hash refusal.
 - **Done when:** the spec is locked, conformal and MCS tests pass, the real-data path loads a quality-checked dataset, and the feasibility spike has a recorded answer.
 
-### Phase 8B: challengers and the one experiment run
+### Phase 8B: challengers and the one experiment run (CODE BUILT 2026-10-28; run pending; see PROGRESS)
 **Goal:** run EXP-001 once under the locked spec and report it honestly.
 - `models/minimamba_vol.py` (CPU, MPS optional): **pin the exact version, read the source, sanity-check** shapes, scan causality and determinism. `mamba_ssm_vol.py` stays a stub until a CUDA GPU exists.
 - `models/nf_baselines.py` (NHITS, PatchTST, LSTM) and `models/chronos_zeroshot.py` as baselines only; **include them only if the owner approves the heavy dependencies in 8A's spec**.
@@ -359,3 +403,33 @@ Phase 8 is divided in two so each piece fits a session and so the experiment spe
 2. Where the neural models will run (feasibility spike result).
 3. Whether neuralforecast and Chronos are in scope for EXP-001 (heavy dependencies) or only minimamba vs HAR/GARCH.
 4. Approval of the proposed spec defaults L11 and L12 in `docs/DECISIONS.md`.
+
+---
+
+## Phase 8A known issues (added 2026-10-27)
+
+- L-2 (weekend/gap features): RESOLVED in code by decision L16 (`features/gaps.py`), verified only on a synthetic fixture with an injected weekend. Real FX files are unseen.
+- L-10 (interval not conformal): the conformal band exists and `sx-lab run` uses it; `make_forecasts` without `conformal` still gives the old non-conformal band.
+- L-7 (`testpaths`): the root `pyproject.toml` now lists `lab/tests` and `data/tests`.
+- 8A-1 `EXP-001.yaml` is a draft. PROPOSED values (not owner-reviewed): MiniMamba settings (d_model 64, 2 layers, context 48), `max_variants` 20, MCS reps/seed/block size, conformal alpha 0.2 and calibration rule, outcome rules (win/tie/loss), stopping rule wording, gap policy L16.
+- 8A-2 Holidays: an unexpected gap longer than 3 bars (for example a market holiday or an outage) makes `make_gap_aware_dataset` REFUSE the whole file. There is no override or holiday list yet. Decide before real data (list the holidays, split the file, or raise the tolerance with evidence).
+- 8A-3 `GapRules` closure window (Friday 20:00 to Sunday 23:00 UTC) is an assumption; the first bar after a weekend is dropped as a row.
+- 8A-4 Conformal coverage is verified only by simulation (exchangeable data: holds; variance shift: degrades). On real volatility the guarantee does not apply and horizon-24 targets overlap; the embargo between calibration and report rows reduces but does not remove this.
+- 8A-5 MCS verified on a known-answer synthetic only; only `MCS.__init__` of `arch` 8.0.0 was source-read, not the full test statistic code.
+- 8A-6 Regime model: 2 regimes fixed, parameters fitted once on the training window (no walk-forward refit), may fail to converge on real data (it then raises). Not wired into any screen or Forecast.
+- 8A-7 `sx-lab lock` / `open-holdout` were tested only on a fixture-derived file. The holdout is still a process rule, not security (L-3). `lock` does not run `Ledger.verify()`.
+- 8A-8 The zip has no `.env.example`, so one core test fails in the sandbox; root README and Makefile are still absent.
+- 8A-9 FOUND AND FIXED 2026-10-27: `ruptures` 1.1.10 cannot install on Python 3.14.3 (owner's pip error). Now an optional extra; change points use in-house PELT. Still unverified: `pip-audit` on statsmodels and pyyaml, and PyYAML 6.0.3 on the Mac (the owner's pip run stopped before it). statsmodels 0.15.0 is confirmed installed on the Mac.
+- 8A-10 No training code exists. `models/minimamba_vol.py` is still empty (8B).
+- 8A-11 (2026-10-28) Import aliases and time formats are unverified against a real Dukascopy file; the first real file decides what to add. A flat-bar warning (high == low runs of 3 or more) prints at import but does not refuse; how filler bars affect QLIKE (zero targets) is not handled yet.
+- 8A-12 The importer no longer reads bid_close/ask_close/complete columns; every bar is assumed closed (recorded in provenance).
+- (Superseded 2026-10-28: the data is imported and EXP-001 is locked; 8B is unblocked but waits for the owner to say go and to choose where MiniMamba trains. See PROGRESS.)
+- 8A-13 (2026-10-28) `sx_data.cli history` has never run against the live OANDA API. First live run may expose: wrong token or region (HTTP 401/403 message), history depth, payload differences from the recalled v20 shape, or practice-feed gaps. Compare its quality line before locking. OHLC are MID prices, not bid or ask.
+- 8A-14 The owner's token was pasted in a chat; regenerate it. Use the variable name `OANDA_TOKEN` (not `OANDA_API_TOKEN`).
+- (Done 2026-10-28: history downloaded for 2024-10-01 to 2026-10-26, EXP-001 approved and locked.)
+
+---
+
+## Phase 9A known issues (added 2026-10-28)
+Full list with reasons: `docs/PROGRESS.md` 'Phase 9A notes' (9A-1 to 9A-10). Headlines: no real-data result yet; labels are mid-price diagnostics without costs; setups come from overlapping windows (slightly different from one full replay); provisional barrier/grid/look-back numbers are unreviewed; holdout is a process rule; the scorer is not wired to the API or web (9B); lightgbm's `libomp` need on the Intel Mac is unconfirmed; `pip install -e "assistant[dev,model]"` is now required for the model tests (they fail loudly at import without it). Lab badge (X17) is done: premarket sample labels are hidden on the Lab screen only (M10).
+

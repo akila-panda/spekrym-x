@@ -135,10 +135,15 @@ class OandaClient:
             last = page[-1].time
             if not include_first and last <= cursor:
                 raise OandaError("pagination made no progress")
+            added = 0
             for c in page:
                 if c.complete and start <= c.time < end and (not out or c.time > out[-1].time):
                     out.append(c)
-            if last >= end or len(page) < self._page:
+                    added += 1
+            # A short page is NOT the end: the real API can return fewer than ``count`` on a
+            # follow-up page (a 5000-candle request gave 4999), which once cut a download off
+            # five months early. Stop only at ``end`` or when a page adds no new closed bar.
+            if last >= end or added == 0:
                 break
             cursor, include_first = last, False
         return out

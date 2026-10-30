@@ -11,6 +11,7 @@ dependencies = [
   "sx-core",
   "sx-data",
   "TA-Lib==0.8.2",
+  "httpx==0.28.1",   # analyst provider adapters (Phase 9C)
   # smartmoneyconcepts==0.0.27 is also required but is NOT listed here: it declares numba,
   # which it never imports, and numba/llvmlite have no Intel-Mac wheels. Install it with:
   #   pip install --no-deps smartmoneyconcepts==0.0.27
@@ -21,6 +22,8 @@ dependencies = [
 retro = ["trendln==0.1.18"]
 # Static daily brief (premarket/report_plotly.py). PNG/PDF export also needs Google Chrome installed.
 report = ["plotly==7.1.0", "kaleido==1.5.0"]
+# Phase 9A scorer (labels, LightGBM, SHAP reasons). Needs libomp on macOS if lightgbm fails to import.
+model = ["lightgbm==4.7.0", "shap==0.54.1"]
 dev = ["pytest==9.1.1", "ruff==0.17.2"]
 
 [tool.setuptools.packages.find]

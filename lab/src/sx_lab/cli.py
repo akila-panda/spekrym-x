@@ -1,5 +1,6 @@
-"""``sx-lab run | evaluate | search | report`` (Phase 7B). Validation split only: the holdout
-is never opened here (it needs ``LabPartition.lock_evaluation`` / ``open_holdout``, Phase 8).
+"""``sx-lab run | evaluate | search | report`` (7B) plus ``import | spec-hash | lock |
+open-holdout`` (8A, see cli_experiment.py). run/evaluate/search/report use the validation split
+only; only ``open-holdout`` can touch the holdout, and only with explicit confirmation.
 
 Example: python -m sx_lab.cli evaluate --candles tests/fixtures/lab/eurusd_h1_synth_1000.json
 """
@@ -16,11 +17,13 @@ from sx_core.config import load_settings
 from sx_core.contracts import Candle
 from sx_core.ledger import Ledger
 from sx_core.storage import frame_to_candles, read_parquet
+from sx_lab.calibration.conformal import SplitConformal, coverage_report
+from sx_lab.cli_experiment import cmd_import, cmd_lock, cmd_open_holdout, cmd_spec_hash
+from sx_lab.features.gaps import make_gap_aware_dataset
 from sx_lab.baselines import HAR, Garch, GarchFitError, HistoricalMean, Persistence
 from sx_lab.evaluation import metrics
 from sx_lab.evaluation.negative_controls import leaked_feature_control, shuffled_label_control
 from sx_lab.evaluation.purged_cv_crosscheck import crosscheck
-from sx_lab.features import make_dataset
 from sx_lab.partition import LabPartition
 from sx_lab.records import make_forecasts
 from sx_lab.search import SEARCH_WINDOWS, run_har_search, variants_tried
@@ -35,8 +38,11 @@ def _load(path: str) -> list[Candle]:
 
 
 def _setup(a: argparse.Namespace) -> tuple[list[Candle], LabPartition, Ledger, Path]:
+    if not a.candles:
+        raise SystemExit("this command needs --candles")
     candles = _load(a.candles)
-    part = LabPartition(make_dataset(candles, a.horizon, SEARCH_WINDOWS), horizon=a.horizon)
+    part = LabPartition(make_gap_aware_dataset(candles, a.horizon, SEARCH_WINDOWS),
+                        horizon=a.horizon)
     out = Path(a.out) / part.data_version.removeprefix("dv:")
     out.mkdir(parents=True, exist_ok=True)
     return candles, part, Ledger(a.ledger), out
@@ -54,9 +60,25 @@ def cmd_run(a: argparse.Namespace) -> int:
     preds = pd.DataFrame({n: m.predict(val) for n, m in models.items()})
     preds["target"] = val["target"]
     preds.to_parquet(out / "predictions.parquet")
-    fc = make_forecasts(models["har"], models["historical_mean"], train, val,
+    # conformal: calibrate on the first half of validation, report on the later half, with an
+    # embargo between them so overlapping target windows cannot straddle the cut
+    half = len(val) // 2
+    cal, ev = val.iloc[:half], val.iloc[half + part.embargo:]
+    har = models["har"]
+    conf = SplitConformal(alpha=0.2).calibrate(har.predict(cal), cal["target"])
+    fc = make_forecasts(har, models["historical_mean"], train, ev,
                         instrument=candles[0].instrument, tf=candles[0].tf,
-                        variants_tried=variants_tried(ledger)["trials"])
+                        variants_tried=variants_tried(ledger)["trials"], conformal=conf)
+    lo, hi = conf.interval(har.predict(ev).to_numpy())
+    cov = coverage_report(lo, hi, har.predict(ev).to_numpy(), ev["target"].to_numpy(),
+                          nominal=conf.nominal)
+    (out / "conformal_har.json").write_text(json.dumps(
+        {"nominal": cov.nominal, "empirical": cov.empirical, "n": cov.n,
+         "n_calibration": conf.n_calibration, "worst_rolling": cov.worst_rolling,
+         "caveat": "split-conformal needs exchangeability; not guaranteed for volatility"},
+        indent=1) + "\n")
+    print(f"conformal HAR band: nominal {cov.nominal:.2f}, measured {cov.empirical:.3f} on "
+          f"{cov.n} later rows (calibrated on {conf.n_calibration})")
     (out / "forecasts_har.json").write_text(
         json.dumps([f.to_wire() for f in fc], indent=1) + "\n")
     print(f"wrote {out}/predictions.parquet and forecasts_har.json ({len(fc)} records)")
@@ -133,10 +155,59 @@ def _print(r: dict) -> None:
         print(f"  control {c['name']}: {'PASS' if c['passed'] else 'FAIL'} - {c['detail']}")
 
 
+def _exp001(fn_name: str, a: argparse.Namespace) -> int:
+    try:  # torch is imported lazily so the Mac's main venv (no torch) keeps working
+        from sx_lab import exp001
+        from sx_lab.exp001_core import Exp001Refused
+    except ImportError as e:
+        raise SystemExit(
+            f"refused: needs torch and minimamba in this environment ({e})") from e
+    try:
+        res = getattr(exp001, fn_name)(a, log=lambda m: print(m, flush=True))
+    except Exp001Refused as e:
+        print(f"REFUSED: {e}")
+        return 2
+    print(f"{res['stage']} outcome: {res['outcome'].upper()} | MCS included: "
+          f"{', '.join(res['mcs']['included'])} | excluded: "
+          f"{', '.join(res['mcs']['excluded']) or 'none'}")
+    for n, s in res["scores"].items():
+        print(f"  {n:16s} QLIKE {s['qlike']:.5f}  RMSE {s['rmse']:.3e}")
+    return 0
+
+
+def cmd_exp001_validate(a: argparse.Namespace) -> int:
+    return _exp001("run_validate", a)
+
+
+def cmd_exp001_holdout(a: argparse.Namespace) -> int:
+    return _exp001("run_holdout", a)
+
+
+def cmd_exp001_report(a: argparse.Namespace) -> int:
+    from sx_lab.exp001_report import build_report
+    text = build_report(Path(a.out) / "exp001")
+    Path(a.report_out).write_text(text)
+    print(f"wrote {a.report_out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="sx-lab")
-    ap.add_argument("command", choices=["run", "evaluate", "search", "report"])
-    ap.add_argument("--candles", required=True, help=".json (Candle list) or .parquet")
+    ap.add_argument("command", choices=["run", "evaluate", "search", "report", "import",
+                                        "spec-hash", "lock", "open-holdout",
+                                        "exp001-validate", "exp001-holdout", "exp001-report"])
+    ap.add_argument("--candles", help=".json (Candle list) or .parquet")
+    ap.add_argument("--spec", default="lab/experiments/prereg/EXP-001.yaml")
+    ap.add_argument("--source-file", nargs="+", help="import: owner CSV/Parquet file(s)")
+    ap.add_argument("--time-format", default=None, help="import: strptime format override")
+    ap.add_argument("--instrument", default="EUR_USD")
+    ap.add_argument("--tf", default="H1")
+    ap.add_argument("--source", default="owner file")
+    ap.add_argument("--assume-tz", default=None, help="import: tz of a naive time column")
+    ap.add_argument("--out-file", default="lab/outputs/data/import.parquet")
+    ap.add_argument("--accept-degraded", action="store_true")
+    ap.add_argument("--reason", default="")
+    ap.add_argument("--confirm-spend-holdout", action="store_true")
     ap.add_argument("--horizon", type=int, default=24)
     ap.add_argument("--out", default="lab/outputs")
     ap.add_argument("--ledger", default="lab/outputs/ledger.jsonl")
@@ -144,10 +215,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--data-label", default="SAMPLE DATA — NOT LIVE")
     ap.add_argument("--study", default="har_windows")
     ap.add_argument("--trials", type=int, default=12)
+    ap.add_argument("--report-out", default="lab/experiments/EXP-001_mamba_vs_har.md")
     a = ap.parse_args(argv)
     load_settings(dotenv_path=a.dotenv)  # paper-mode guard: refuses to start unless paper
     return {"run": cmd_run, "evaluate": cmd_evaluate, "search": cmd_search,
-            "report": cmd_report}[a.command](a)
+            "report": cmd_report, "import": cmd_import, "spec-hash": cmd_spec_hash,
+            "lock": cmd_lock, "open-holdout": cmd_open_holdout,
+            "exp001-validate": cmd_exp001_validate, "exp001-holdout": cmd_exp001_holdout,
+            "exp001-report": cmd_exp001_report}[a.command](a)
 
 
 if __name__ == "__main__":

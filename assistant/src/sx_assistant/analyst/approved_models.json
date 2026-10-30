@@ -1,0 +1,19 @@
+{
+  "note": "Only models listed here can be used. Set owner_confirmed_free to true ONLY after you have checked in the provider console that this model is on a free plan with no billing attached; confirmed_on is the date you checked. max_requests_per_day is a LOCAL safety cap (an estimate, provisional; the provider's real limit applies regardless). Model ids are defaults taken from provider docs on 2026-10-28 and were not verified against your account; run `python -m sx_assistant.analyst.run check` to see what your key can use.",
+  "models": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "owner_confirmed_free": false,
+      "confirmed_on": null,
+      "max_requests_per_day": 50
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "owner_confirmed_free": true,
+      "confirmed_on": "2026-10-28",
+      "max_requests_per_day": 50
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+ "status": "no_result",
+ "instrument": "EUR_USD",
+ "tf": "H1",
+ "as_of": "2026-10-27T00:00:00Z",
+ "source": {
+  "id": "sample",
+  "name": "Test fixture",
+  "label": "TEST FIXTURE - NOT REAL SUGGESTIONS",
+  "live": false
+ },
+ "labels": [
+  "Exploratory",
+  "Not validated",
+  "Retrospective"
+ ],
+ "scorer": {
+  "stage": "none",
+  "reading": "No 9A validation result exists yet.",
+  "validation": null,
+  "holdout": null
+ },
+ "items": [],
+ "evidence": [],
+ "candles": [],
+ "rejected": [],
+ "note": "No suggestions: run the 9A validation first (python -m sx_assistant.model.run validate)."
+}

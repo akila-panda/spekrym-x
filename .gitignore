@@ -34,3 +34,5 @@ lab/outputs/*
 .idea/
 .vscode/
 spekrym-x-optimized.zip
+assistant/outputs/*
+!assistant/outputs/.gitkeep
